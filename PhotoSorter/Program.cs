@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
-using MetadataExtractor.Formats.Tiff;
 using Directory = System.IO.Directory;
 
 namespace PhotoSync
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             // enumerate files in camera uploads folder
             //Copy them into new folder
@@ -25,7 +21,7 @@ namespace PhotoSync
             var targetPhotosFolder = Path.Combine(dropBoxPath, "Photos");
             var sourceCameraUploadsFolder = Path.Combine(dropBoxPath, "Camera Uploads");
 
-            
+
             var counter = EnumerateFilesInDirectory(sourceCameraUploadsFolder, targetPhotosFolder);
 
             counter += EnumerateDirectoriesInRootRecursive(sourceCameraUploadsFolder, targetPhotosFolder);
@@ -35,7 +31,7 @@ namespace PhotoSync
 
         private static int EnumerateDirectoriesInRootRecursive(string sourceCameraUploadsFolder, string targetPhotosFolder)
         {
-            var directories = Directory.EnumerateDirectories(sourceCameraUploadsFolder,"*",SearchOption.AllDirectories);
+            var directories = Directory.EnumerateDirectories(sourceCameraUploadsFolder, "*", SearchOption.AllDirectories);
 
             return directories.Sum(directory => EnumerateFilesInDirectory(directory, targetPhotosFolder));
         }
@@ -44,7 +40,7 @@ namespace PhotoSync
         {
             var files = Directory.EnumerateFiles(sourceCameraUploadsFolder);
 
-            int counter = 0;
+            var counter = 0;
             foreach (var file in files)
             {
                 if (Path.GetExtension(file) == ".dropbox")
@@ -52,7 +48,7 @@ namespace PhotoSync
                     continue;
                 }
 
-                DateTime time = File.GetCreationTime(file);
+                var time = File.GetCreationTime(file);
                 try
                 {
                     var directories = ImageMetadataReader.ReadMetadata(file);
