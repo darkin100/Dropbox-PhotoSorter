@@ -25,8 +25,26 @@ namespace PhotoSync
             var targetPhotosFolder = Path.Combine(dropBoxPath, "Photos");
             var sourceCameraUploadsFolder = Path.Combine(dropBoxPath, "Camera Uploads");
 
+            
+            var counter = EnumerateFilesInDirectory(sourceCameraUploadsFolder, targetPhotosFolder);
+
+            counter += EnumerateDirectoriesInRootRecursive(sourceCameraUploadsFolder, targetPhotosFolder);
+
+            Console.WriteLine($"Processed {counter} files");
+        }
+
+        private static int EnumerateDirectoriesInRootRecursive(string sourceCameraUploadsFolder, string targetPhotosFolder)
+        {
+            var directories = Directory.EnumerateDirectories(sourceCameraUploadsFolder,"*",SearchOption.AllDirectories);
+
+            return directories.Sum(directory => EnumerateFilesInDirectory(directory, targetPhotosFolder));
+        }
+
+        private static int EnumerateFilesInDirectory(string sourceCameraUploadsFolder, string targetPhotosFolder)
+        {
             var files = Directory.EnumerateFiles(sourceCameraUploadsFolder);
-           
+
+            int counter = 0;
             foreach (var file in files)
             {
                 if (Path.GetExtension(file) == ".dropbox")
@@ -70,9 +88,10 @@ namespace PhotoSync
                 var targetFilePath = Path.Combine(dayPath, fileName);
 
                 File.Move(file, targetFilePath);
-
-
+                counter++;
             }
+
+            return counter;
         }
     }
 }
